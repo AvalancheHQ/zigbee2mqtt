@@ -1,23 +1,23 @@
-import {existsSync, mkdirSync} from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import stringify from "json-stable-stringify-without-jsonify";
-import {afterAll, afterEach, beforeAll, beforeEach, bench, describe} from "vitest";
-import {Zcl, Zdo, ZSpec} from "zigbee-herdsman";
+import { bench, describe } from "vitest";
+import { Zcl, Zdo, ZSpec } from "zigbee-herdsman";
 import type Adapter from "zigbee-herdsman/dist/adapter/adapter";
-import type {ZclPayload} from "zigbee-herdsman/dist/adapter/events";
-import {Device, InterviewState} from "zigbee-herdsman/dist/controller/model/device";
-import {Endpoint} from "zigbee-herdsman/dist/controller/model/endpoint";
+import type { ZclPayload } from "zigbee-herdsman/dist/adapter/events";
+import { Device, InterviewState } from "zigbee-herdsman/dist/controller/model/device";
+import { Endpoint } from "zigbee-herdsman/dist/controller/model/endpoint";
 import Entity from "zigbee-herdsman/dist/controller/model/entity";
-import {Group} from "zigbee-herdsman/dist/controller/model/group";
-import type {DeviceType} from "zigbee-herdsman/dist/controller/tstype";
-import {Foundation} from "zigbee-herdsman/dist/zspec/zcl/definition/foundation";
-import type {RequestToResponseMap} from "zigbee-herdsman/dist/zspec/zdo/definition/tstypes";
+import { Group } from "zigbee-herdsman/dist/controller/model/group";
+import type { DeviceType } from "zigbee-herdsman/dist/controller/tstype";
+import { Foundation } from "zigbee-herdsman/dist/zspec/zcl/definition/foundation";
+import type { RequestToResponseMap } from "zigbee-herdsman/dist/zspec/zdo/definition/tstypes";
 import data from "../lib/util/data";
 
 process.env.ZIGBEE2MQTT_DATA = "data-bench";
 data._testReload();
 
 if (!existsSync(data.getPath())) {
-    mkdirSync(data.getPath(), {recursive: true});
+    mkdirSync(data.getPath(), { recursive: true });
 }
 
 const createEndpoint = (id: number, ieeeAddr: string, networkAddress: number) => {
@@ -30,7 +30,7 @@ const createEndpoint = (id: number, ieeeAddr: string, networkAddress: number) =>
         networkAddress,
         ieeeAddr,
     );
-    ep.save = () => {};
+    ep.save = () => { };
 
     return ep;
 };
@@ -81,7 +81,7 @@ const createDevice = (
     );
 
     // in-memory only
-    device.save = () => {};
+    device.save = () => { };
 
     return device;
 };
@@ -91,7 +91,7 @@ const createGroup = (dbId: number, id: number): Group => {
     const group = new Group(dbId, id, [], {});
 
     // in-memory only
-    group.save = () => {};
+    group.save = () => { };
 
     return group;
 };
@@ -207,7 +207,7 @@ const adapter = {
         _disableRecovery: boolean,
         sourceEndpoint?: number,
     ): Promise<ZclPayload | undefined> => {
-        const payload: {[key: string]: unknown}[] = [];
+        const payload: { [key: string]: unknown }[] = [];
 
         if (!disableResponse) {
             if (zclFrame.header.isGlobal) {
@@ -252,7 +252,7 @@ const adapter = {
                     }
                     case Foundation.configReport.ID: {
                         for (const item of zclFrame.payload) {
-                            payload.push({attrId: item.attrId, status: 0, direction: 1});
+                            payload.push({ attrId: item.attrId, status: 0, direction: 1 });
                         }
 
                         const messageContents = Zcl.Frame.create(
@@ -324,7 +324,7 @@ const mockGlobalThis = () => {
         setTimeoutProms.push(callback());
     };
 
-    return {setImmediateProms, setTimeoutProms};
+    return { setImmediateProms, setTimeoutProms };
 };
 
 const unmockGlobalThis = () => {
@@ -357,11 +357,11 @@ const initSettings = async (pathValuePairs?: [string[], string | number | boolea
 };
 
 const initController = async () => {
-    const {Controller} = await import("../lib/controller.js");
+    const { Controller } = await import("../lib/controller.js");
 
     controller = new Controller(
-        async () => {},
-        async () => {},
+        async () => { },
+        async () => { },
     );
 
     controller.zigbee.start = async () => {
@@ -378,9 +378,9 @@ const initController = async () => {
         getCoordinatorVersion: async () =>
             Promise.resolve({
                 type: "Dummy",
-                meta: {revision: "9.9.9"},
+                meta: { revision: "9.9.9" },
             }),
-        getNetworkParameters: async () => Promise.resolve({...NETWORK_PARAMS}),
+        getNetworkParameters: async () => Promise.resolve({ ...NETWORK_PARAMS }),
         getPermitJoin: () => false,
         getPermitJoinEnd: () => undefined,
         getDeviceByIeeeAddr: (ieeeAddr) => ZH_DEVICES.find((device) => device.ieeeAddr === ieeeAddr),
@@ -416,38 +416,32 @@ const initController = async () => {
         reconnecting: false,
         disconnecting: false,
         disconnected: false,
-        endAsync: async () => {},
+        endAsync: async () => { },
         // @ts-expect-error Z2M does not make use of return
-        publishAsync: async () => {},
+        publishAsync: async () => { },
     };
     controller.mqtt.connect = async () => {
         // @ts-expect-error private
         await controller.mqtt.onConnect();
     };
-    controller.mqtt.subscribe = async () => {};
-    controller.mqtt.unsubscribe = async () => {};
+    controller.mqtt.subscribe = async () => { };
+    controller.mqtt.unsubscribe = async () => { };
 
     // will be in-memory only
-    controller.state.start = () => {};
-    controller.state.stop = () => {};
+    controller.state.start = () => { };
+    controller.state.stop = () => { };
 };
 
 describe("Controller with dummy zigbee/mqtt", () => {
     describe("defaults start & stop", () => {
-        beforeEach(async () => {
-            initDevices();
-            initGroups();
-            await initSettings();
-            await initController();
-        });
-
-        afterEach(() => {
-            unmockGlobalThis();
-        });
-
         bench(
             "[defaults] start & stop controller",
             async () => {
+                initDevices();
+                initGroups();
+                await initSettings();
+                await initController();
+
                 const mockedGlobal = mockGlobalThis();
 
                 await controller.start();
@@ -458,26 +452,21 @@ describe("Controller with dummy zigbee/mqtt", () => {
                 }
 
                 await controller.stop();
+                unmockGlobalThis();
             },
-            {throws: true},
+            { throws: true },
         );
     });
 
     describe("HA start & stop", () => {
-        beforeEach(async () => {
-            initDevices();
-            initGroups();
-            await initSettings([[["homeassistant", "enabled"], true]]);
-            await initController();
-        });
-
-        afterEach(() => {
-            unmockGlobalThis();
-        });
-
         bench(
             "[HA] start & stop controller",
             async () => {
+                initDevices();
+                initGroups();
+                await initSettings([[["homeassistant", "enabled"], true]]);
+                await initController();
+
                 const mockedGlobal = mockGlobalThis();
 
                 await controller.start();
@@ -489,13 +478,14 @@ describe("Controller with dummy zigbee/mqtt", () => {
                 }
 
                 await controller.stop();
+                unmockGlobalThis();
             },
-            {throws: true},
+            { throws: true },
         );
     });
 
     describe("defaults runtime", () => {
-        beforeAll(async () => {
+        const setupDefaultsRuntime = async () => {
             initDevices();
             initGroups();
             await initSettings();
@@ -504,16 +494,20 @@ describe("Controller with dummy zigbee/mqtt", () => {
 
             await controller.start();
             await settle(mockedGlobal);
-        });
 
-        afterAll(async () => {
+            return mockedGlobal;
+        };
+
+        const cleanupDefaultsRuntime = async () => {
             await controller.stop();
             unmockGlobalThis();
-        });
+        };
 
         bench(
             "[defaults] receive device message",
             async () => {
+                await setupDefaultsRuntime();
+
                 const mockedGlobal = mockGlobalThis();
 
                 controller.eventBus.emitDeviceMessage({
@@ -523,28 +517,36 @@ describe("Controller with dummy zigbee/mqtt", () => {
                     linkquality: 200,
                     groupID: 0,
                     cluster: "genOnOff",
-                    data: {onOff: 1},
+                    data: { onOff: 1 },
                     meta: {},
                 });
                 await settle(mockedGlobal);
+
+                await cleanupDefaultsRuntime();
             },
-            {throws: true},
+            { throws: true },
         );
 
         bench(
             "[defaults] receive MQTT message",
             async () => {
+                await setupDefaultsRuntime();
+
                 const mockedGlobal = mockGlobalThis();
 
                 controller.mqtt.onMessage("zigbee2mqtt/0xf1f1f1f1f1f1f1f1/set", Buffer.from(`{"state": "OFF"}`, "utf8"));
                 await settle(mockedGlobal);
+
+                await cleanupDefaultsRuntime();
             },
-            {throws: true},
+            { throws: true },
         );
 
         bench(
             "[defaults] add group member",
             async () => {
+                await setupDefaultsRuntime();
+
                 const mockedGlobal = mockGlobalThis();
 
                 controller.eventBus.emitMQTTMessage({
@@ -561,13 +563,15 @@ describe("Controller with dummy zigbee/mqtt", () => {
                 if (ZH_GROUPS[0].members.length !== 1) {
                     throw new Error("Invalid state");
                 }
+
+                await cleanupDefaultsRuntime();
             },
-            {throws: true},
+            { throws: true },
         );
     });
 
     describe("defaults/stress runtime", () => {
-        beforeAll(async () => {
+        const setupStressRuntime = async () => {
             initDevices();
             initGroups();
             addManyDevices();
@@ -577,17 +581,21 @@ describe("Controller with dummy zigbee/mqtt", () => {
 
             await controller.start();
             await settle(mockedGlobal);
-        }, 60000);
 
-        afterAll(async () => {
+            return mockedGlobal;
+        };
+
+        const cleanupStressRuntime = async () => {
             await controller.stop();
             unmockGlobalThis();
-        });
+        };
 
         // this is mostly just to confirm the number of devices does not influence the processing (much)
         bench(
             "[defaults/stress] receive device message",
             async () => {
+                await setupStressRuntime();
+
                 const mockedGlobal = mockGlobalThis();
 
                 controller.eventBus.emitDeviceMessage({
@@ -597,17 +605,19 @@ describe("Controller with dummy zigbee/mqtt", () => {
                     linkquality: 200,
                     groupID: 0,
                     cluster: "genOnOff",
-                    data: {onOff: 1},
+                    data: { onOff: 1 },
                     meta: {},
                 });
                 await settle(mockedGlobal);
+
+                await cleanupStressRuntime();
             },
-            {throws: true},
+            { throws: true, timeout: 60000 },
         );
     });
 
     describe("HA runtime", () => {
-        beforeAll(async () => {
+        const setupHARuntime = async () => {
             initDevices();
             initGroups();
             await initSettings([[["homeassistant", "enabled"], true]]);
@@ -617,16 +627,20 @@ describe("Controller with dummy zigbee/mqtt", () => {
             await controller.start();
             controller.mqtt.onMessage("homeassistant/status", Buffer.from("online", "utf8"));
             await settle(mockedGlobal);
-        });
 
-        afterAll(async () => {
+            return mockedGlobal;
+        };
+
+        const cleanupHARuntime = async () => {
             await controller.stop();
             unmockGlobalThis();
-        });
+        };
 
         bench(
             "[HA] receive device message",
             async () => {
+                await setupHARuntime();
+
                 const mockedGlobal = mockGlobalThis();
 
                 controller.eventBus.emitDeviceMessage({
@@ -636,37 +650,47 @@ describe("Controller with dummy zigbee/mqtt", () => {
                     linkquality: 200,
                     groupID: 0,
                     cluster: "genOnOff",
-                    data: {onOff: 1},
+                    data: { onOff: 1 },
                     meta: {},
                 });
                 await settle(mockedGlobal);
+
+                await cleanupHARuntime();
             },
-            {throws: true},
+            { throws: true },
         );
 
         bench(
             "[HA] receive MQTT message",
             async () => {
+                await setupHARuntime();
+
                 const mockedGlobal = mockGlobalThis();
 
                 controller.mqtt.onMessage("zigbee2mqtt/0xf1f1f1f1f1f1f1f1/set", Buffer.from(`{"state": "OFF"}`, "utf8"));
                 await settle(mockedGlobal);
+
+                await cleanupHARuntime();
             },
-            {throws: true},
+            { throws: true },
         );
 
         bench(
             "[HA] receive MQTT discovery message",
             async () => {
+                await setupHARuntime();
+
                 const mockedGlobal = mockGlobalThis();
 
                 controller.mqtt.onMessage(
                     "homeassistant/sensor/0xe2e2e2e2e2e2e2e2/update/config",
-                    Buffer.from(stringify({availability: [{topic: "zigbee2mqtt/bridge/state", value_template: "{{ value_json.state }}"}]}), "utf8"),
+                    Buffer.from(stringify({ availability: [{ topic: "zigbee2mqtt/bridge/state", value_template: "{{ value_json.state }}" }] }), "utf8"),
                 );
                 await settle(mockedGlobal);
+
+                await cleanupHARuntime();
             },
-            {throws: true},
+            { throws: true },
         );
     });
 });
