@@ -11,9 +11,8 @@ permissions:
   contents: read
 
 jobs:
-  benchmarks:
+  benchmarks-instrumented:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please-'))
     steps:
       - uses: actions/checkout@v4
 
@@ -21,7 +20,35 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20.5.1
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Install codspeed-node from Git
+        run: .github/scripts/codspeed-node-from-git.sh main
+
+      - name: Bench
+        uses: CodSpeedHQ/action@v3
+        with:
+          run: pnpm run bench
+          token: ${{ secrets.CODSPEED_TOKEN }}
+
+  benchmarks-walltime:
+    runs-on: codspeed-macro
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.5.1
           registry-url: https://registry.npmjs.org/
           cache: pnpm
 
