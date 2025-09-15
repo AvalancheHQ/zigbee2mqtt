@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@codspeed/core':
+        specifier: 5.0.0-alpha.2
+        version: 5.0.0-alpha.2
       ajv:
         specifier: ^8.17.1
         version: 8.17.1

@@ -1,5 +1,8 @@
 import codspeedPlugin from "@codspeed/vitest-plugin";
-import {defineConfig} from "vitest/config";
+import { defineConfig } from "vitest/config";
+import { isBound } from "@codspeed/core";
+
+console.log(`CodSpeed is ${isBound ? "bound" : "not bound"}`);
 
 export default defineConfig({
     plugins: [codspeedPlugin()],
