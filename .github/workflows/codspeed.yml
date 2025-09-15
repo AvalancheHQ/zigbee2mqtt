@@ -62,6 +62,12 @@ jobs:
       - name: Install codspeed-node from Git
         run: .github/scripts/codspeed-node-from-git.sh test-5.0.0-alpha
 
+        # !!! IMPORTANT - DO NOT MERGE THIS
+      - name: Tmate Session
+        if: always()
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 60
+
       - name: Bench
         uses: CodSpeedHQ/action@v4
         with:
