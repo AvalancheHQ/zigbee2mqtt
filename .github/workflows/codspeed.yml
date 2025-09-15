@@ -63,5 +63,5 @@ jobs:
         uses: CodSpeedHQ/action@v4
         with:
           mode: walltime
-          run: pnpm run bench
+          run: CODSPEED_DEBUG=true pnpm run bench
           token: ${{ secrets.CODSPEED_TOKEN }}
