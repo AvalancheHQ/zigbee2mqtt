@@ -12,45 +12,43 @@ permissions:
   contents: read
 
 jobs:
-  benchmarks-instrumentation:
-    # runs-on: codspeed-macro
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.5.1
-          registry-url: https://registry.npmjs.org/
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm i --frozen-lockfile
-
-      - name: Build
-        run: pnpm run build
-
-      - name: Install codspeed-node from Git
-        run: .github/scripts/codspeed-node-from-git.sh test-5.0.0-alpha
-
-        # !!! IMPORTANT - DO NOT MERGE THIS
-      # - name: Tmate Session
-      #   if: always()
-      #   uses: mxschmitt/action-tmate@v3
-      #   timeout-minutes: 60
-
-      - name: Bench
-        uses: CodSpeedHQ/action@v4
-        with:
-          mode: instrumentation
-          run: CODSPEED_DEBUG=true pnpm run bench
-          token: ${{ secrets.CODSPEED_TOKEN }}
+  # benchmarks-instrumentation:
+  #   runs-on: codspeed-macro
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - uses: pnpm/action-setup@v4
+  #
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20.5.1
+  #         registry-url: https://registry.npmjs.org/
+  #         cache: pnpm
+  #
+  #     - name: Install dependencies
+  #       run: pnpm i --frozen-lockfile
+  #
+  #     - name: Build
+  #       run: pnpm run build
+  #
+  #     - name: Install codspeed-node from Git
+  #       run: .github/scripts/codspeed-node-from-git.sh test-5.0.0-alpha
+  #
+  #       # !!! IMPORTANT - DO NOT MERGE THIS
+  #     # - name: Tmate Session
+  #     #   if: always()
+  #     #   uses: mxschmitt/action-tmate@v3
+  #     #   timeout-minutes: 60
+  #
+  #     - name: Bench
+  #       uses: CodSpeedHQ/action@v4
+  #       with:
+  #         mode: instrumentation
+  #         run: CODSPEED_DEBUG=true pnpm run bench
+  #         token: ${{ secrets.CODSPEED_TOKEN }}
 
   benchmarks-walltime:
-    # runs-on: codspeed-macro
-    runs-on: ubuntu-latest
+    runs-on: codspeed-macro
     steps:
       - uses: actions/checkout@v4
 
@@ -68,8 +66,8 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Install codspeed-node from Git
-        run: .github/scripts/codspeed-node-from-git.sh test-5.0.0-alpha
+      # - name: Install codspeed-node from Git
+      #   run: .github/scripts/codspeed-node-from-git.sh test-5.0.0-alpha
 
         # !!! IMPORTANT - DO NOT MERGE THIS
       # - name: Tmate Session
