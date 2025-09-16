@@ -42,7 +42,6 @@
     },
     "homepage": "https://koenkk.github.io/zigbee2mqtt",
     "dependencies": {
-        "@codspeed/core": "5.0.0-alpha.2",
         "ajv": "^8.17.1",
         "bind-decorator": "^1.0.11",
         "debounce": "^2.2.0",
@@ -71,7 +70,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "^2.0.5",
-        "@codspeed/vitest-plugin": "5.0.0-alpha.2",
+        "@codspeed/vitest-plugin": "5.0.0-alpha.3",
         "@types/finalhandler": "^1.2.3",
         "@types/humanize-duration": "^3.27.4",
         "@types/js-yaml": "^4.0.9",
