@@ -78,8 +78,8 @@ jobs:
           token: ${{ secrets.CODSPEED_TOKEN }}
 
       # !!! IMPORTANT - DO NOT MERGE THIS
-      - name: Tmate Session
-        if: always()
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 60
+      # - name: Tmate Session
+      #   if: always()
+      #   uses: mxschmitt/action-tmate@v3
+      #   timeout-minutes: 60
 
